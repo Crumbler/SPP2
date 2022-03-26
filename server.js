@@ -5,25 +5,41 @@ const fs = require('fs');
 const app = express();
 const port = 80;
 
+
 app.use('/', express.static('css'));
 app.use('/', express.static('js'));
 
 
-app.get('/', (req, res) => {
-  
+let statuses;
 
+function loadStatuses()
+{
+  statuses = JSON.parse(fs.readFileSync('taskStatuses.json'));
+}
+
+loadStatuses();
+
+
+app.get('/', (req, res) => {
   res.sendFile('./html/index.html', { root: __dirname });
 });
+
+
+app.get('/statuses', (req, res) => {
+  res.send(statuses);
+})
 
 
 app.get('/tasks', (req, res) => {
   const rawTasks = fs.readFileSync('tasks.json');
   let tasks = JSON.parse(rawTasks);
-  const totalTasks = tasks.length;
 
-  if (req.query.filter && req.query.filter !== 'None')
+  let filter = req.query.filter;
+
+  if (filter)
   {
-    tasks = tasks.filter(task => task.status === req.query.filter);
+    filter = Number(filter);
+    tasks = tasks.filter(task => task.statusId === filter);
   }
 
   res.send(tasks);
