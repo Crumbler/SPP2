@@ -6,42 +6,41 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>TaskList</title>
         <link rel="stylesheet" href="main.css">
+        <script defer src="jquery-3.6.0.min.js"></script>
+        <script defer src="main.js"></script>
     </head>
     <body>
         <header>
-            <h1>The fabulous task list</h1>
-            <p>Feel free to edit these tasks to your heart's content.</p>
+            <div class="header-wrap">
+                <h1>The fabulous task list</h1>
+                <p>Feel free to edit these tasks to your heart's content.</p>
+            </div>
+            <form>
+                <label for="filter-type">Filter:</label><br>
+                <select id="filter-type" name="filter">
+                    <option>None</option>
+                </select>
+                <input type="submit" value="Apply">
+            </form>
         </header>
-        <div class="flex-main">
-            <aside>
-                <form>
-                    <label for="filter-type">Filter:</label><br>
-                    <select id="filter-type" name="filter">
-                        <option>None</option>
-                        <option>Complete</option>
-                        <option>Incomplete</option>
-                        <option>Not started</option>
-                    </select>
-                    <input type="submit" value="Apply">
-                </form>
-                <form method="post" enctype="multipart/form-data">
-                    <label for="task-id">Select task:</label>
-                    <input type="number" id="task-id" name="task" min="1" value="1"><br>
-                    <label for="task-date">Completion date:</label>
-                    <input type="date" id="task-date" name="date"><br>
-                    <label for="task-file">Attach file:</label>
-                    <input type="file" id="task-file" name="file"><br>
-                    <input type="submit" value="Update task">
-                </form>
-            </aside>
-            <main>
-                <div>
-                    Task №?<br>
-                    Some task: some status<br>
-                    Completion date: Date<br>
-                    File attached: Unknown
-                </div>
-            </main>
-        </div>
+        <aside>
+            <form method="post" enctype="multipart/form-data">
+                <label for="task-id">Select task:</label>
+                <input type="number" id="task-id" name="task" min="1" value="1"><br>
+                <label for="task-date">Completion date:</label>
+                <input type="date" id="task-date" name="date"><br>
+                <label for="task-file">Attach file:</label>
+                <input type="file" id="task-file" name="file"><br>
+                <input type="submit" value="Update task">
+            </form>
+        </aside>
+        <main>
+            <div>
+                Task №?<br>
+                Some task: some status<br>
+                Completion date: Date<br>
+                File attached: Unknown
+            </div>
+        </main>
     </body>
 </html>

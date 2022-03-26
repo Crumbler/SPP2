@@ -4,12 +4,18 @@ body
     padding-left: 8rem;
     padding-right: 8rem;
     padding-top: 4rem;
+    padding-bottom: 4rem;
 }
 
 header
 {
     padding: 2rem;
     margin-bottom: 0;
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
 }
 
 header, aside, main > div
@@ -17,48 +23,41 @@ header, aside, main > div
     background-color: bisque;
 }
 
-header > h1
+header h1
 {
+    margin-top: 0;
+
     font-size: 3rem;
 }
 
-header > p, aside, main, form *
+header p
+{
+    margin-bottom: 0;
+}
+
+header p, aside, main, form *
 {
     font-size: 2rem;
 }
 
-.flex-main
-{
-    margin-top: 2rem;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 4rem;
-}
-
 aside
 {
+    margin-top: 2rem;
     min-width: 500px;
-}
-
-aside > form:first-child
-{
-    margin-bottom: 2rem;
 }
 
 main
 {
-    flex-shrink: 1;
-    flex-grow: 2;
+    margin-top: 2rem;
 
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 4rem;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 2rem 4rem;
 }
 
 aside, main > div
 {
-    padding: 2rem;
+    padding: 1.5rem;
 }
