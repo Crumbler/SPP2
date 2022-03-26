@@ -1,5 +1,7 @@
 'use strict'
 
+let statuses, tasks;
+
 
 window.onload = function() {
     clearTasks();
@@ -10,11 +12,8 @@ window.onload = function() {
 
 function clearTasks()
 {
-    $('main > div').remove();
+    $('.task').remove();
 }
-
-
-let statuses;
 
 
 async function getStatuses()
@@ -39,35 +38,51 @@ function createStatusOption(status)
 
 async function getTasks(status)
 {
-    console.log(window.location.hostname);
-
     const url = new URL('/tasks', `${window.location.protocol}//${window.location.hostname}`);
 
     if (status != null) {
         url.searchParams.set('filter', status);
     }
 
-    console.log('fetching from URL:' + url);
-
     const response = await fetch(url);
-    const json = await response.json();
+    tasks = await response.json();
 
-    console.log('got ' + json.length + ' tasks');
+    const taskElements = tasks.map(task => createTaskElement(task));
 
-    const tasks = json.map(task => createTaskElement(task));
-
-    $("main").append(...tasks);
+    $("main").append(...taskElements);
 }
 
 
 function createTaskElement(task)
 {
-    const el = document.createElement('div');
-
-    el.innerHTML = `${task.title}: ${statuses[task.statusId]}<br>
+    const taskContent = document.createElement('div');
+    taskContent.className = 'task-content';
+    taskContent.innerHTML = `${task.title}: ${statuses[task.statusId]}<br>
                     More text`;
 
-    return el;
+    const icon1 = document.createElement('icon');
+    icon1.className = 'icon icon-edit';
+
+    const buttonEdit = document.createElement('button');
+    buttonEdit.className = 'task-button';
+    buttonEdit.append(icon1);
+
+    const icon2 = document.createElement('icon');
+    icon2.className = 'icon icon-delete';
+
+    const buttonDelete = document.createElement('button');
+    buttonDelete.className = 'task-button';
+    buttonDelete.append(icon2);
+
+    const taskDropdown = document.createElement('div');
+    taskDropdown.className = 'task-dropdown';
+    taskDropdown.append(buttonEdit, buttonDelete);
+
+    const taskElement = document.createElement('div');
+    taskElement.className = 'task';
+    taskElement.append(taskContent, taskDropdown);
+
+    return taskElement;
 }
 
 $('header > form').submit(event => {

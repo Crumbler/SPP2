@@ -57,7 +57,57 @@ main
     gap: 2rem 4rem;
 }
 
-aside, main > div
+aside, .task-content
 {
     padding: 1.5rem;
+}
+
+.task-dropdown
+{
+    display: none;
+    background-color: cornflowerblue;
+    position: absolute;
+    height: max-content;
+}
+
+.task:hover > .task-dropdown
+{
+    display: block;
+}
+
+.task-button
+{
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+
+    padding: 10px;
+}
+
+.task-button:hover
+{
+    background-color: aqua;
+}
+
+.icon
+{
+    width: 64px;
+    height: 64px;
+
+    background-repeat: no-repeat;
+    background-size: contain;
+
+    display: block;
+}
+
+.icon-edit
+{
+    background-image: url('gear-fill.svg');
+}
+
+.icon-delete
+{
+    background-image: url('trash3-fill.svg');
 }

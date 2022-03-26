@@ -8,6 +8,7 @@ const port = 80;
 
 app.use('/', express.static('css'));
 app.use('/', express.static('js'));
+app.use('/', express.static('svg'));
 
 
 let statuses;
