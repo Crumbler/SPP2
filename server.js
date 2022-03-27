@@ -47,41 +47,44 @@ app.get('/tasks', (req, res) => {
 })
 
 
-app.post('/', upload.single('file'), (req, res) => {
-  if (!req.body || !req.body.task) 
-  {
+app.put('/tasks/:id/update', upload.single('file'), (req, res) => {
+  if (!req.body) {
     return res.sendStatus(400);
   }
 
   const rawTasks = fs.readFileSync('tasks.json');
-  let tasks = JSON.parse(rawTasks);
+  const tasks = JSON.parse(rawTasks);
+  
+  const taskId = Number(req.params.id);
+  
+  const task = tasks.find(t => t.id === taskId);
 
-  const taskId = req.body.task;
-
-  if (req.body.date)
-  {
-    tasks[taskId - 1].completionDate = req.body.date;
-  }
-  else
-  {
-    tasks[taskId - 1].completionDate = null;
+  if (req.body.name != null) {
+    task.title = req.body.name;
   }
 
-  if (req.file)
-  {
+  if (req.body.statusid != null) {
+    task.statusId = req.body.statusid;
+  }
+
+  if (req.body.date != null) {
+    task.completionDate = req.body.date;
+  }
+  else {
+    task.completionDate = null;
+  }
+
+  if (req.file) {
     fs.renameSync('Task files/' + req.file.filename, 'Task files/' + taskId + '.bin');
-    tasks[taskId - 1].hasFile = true;
+    task.hasFile = true;
   }
-  else
-  {
-    try 
-    {
+  else {
+    try {
       fs.unlinkSync('Task files/' + taskId + '.bin');
-    } catch(err) 
-    {
+    } catch(err) {
       // file didn't exist
     }
-    tasks[taskId - 1].hasFile = false;
+    task.file = null;
   }
 
   const writeData = JSON.stringify(tasks, null, 2);

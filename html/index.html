@@ -23,17 +23,23 @@
                 <input type="submit" value="Apply">
             </form>
         </header>
-        <aside>
-            <form method="post" enctype="multipart/form-data">
-                <label for="task-id">Select task:</label>
-                <input type="number" id="task-id" name="task" min="1" value="1"><br>
+        <div class="modal">
+            <form class="modal-content" method="post" enctype="multipart/form-data">
+                <label for="task-name">Task name:</label>
+                <input type="text" id="task-name" name="name" value="Task name" required><br>
+                <label for="task-status">Status:</label>
+                <select id="task-status" name="statusid">
+
+                </select><br>
                 <label for="task-date">Completion date:</label>
                 <input type="date" id="task-date" name="date"><br>
-                <label for="task-file">Attach file:</label>
+                <label for="task-file">File:</label>
                 <input type="file" id="task-file" name="file"><br>
                 <input type="submit" value="Update task">
+                <input type="reset">
+                <input type="button" class="button-close" value="Close">
             </form>
-        </aside>
+        </div>
         <main>
             <div class="task">
                 <div class="task-content">
