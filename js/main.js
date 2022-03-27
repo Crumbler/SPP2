@@ -1,5 +1,8 @@
 'use strict'
 
+const modal = $('.modal')[0],
+      modalForm = $('.modal-content')[0];
+
 let statuses, tasks, currentTask,
     currentTaskElement;
 
@@ -20,10 +23,13 @@ async function getStatuses() {
     const response = await fetch('/statuses');
     statuses = await response.json();
 
-    const statusOptions = statuses.map(status => createStatusOption(status));
+    let statusOptions = statuses.map(status => createStatusOption(status));
+
+    $('.modal #task-status').append(...statusOptions);
+
+    statusOptions = statuses.map(status => createStatusOption(status));
 
     $('#filter-type').append(...statusOptions);
-    $('.modal #task-status').append(...statusOptions);
 }
 
 
@@ -77,6 +83,7 @@ function createTaskElement(task) {
     const buttonDelete = document.createElement('button');
     buttonDelete.className = 'task-button';
     buttonDelete.append(icon2);
+    buttonDelete.onclick = onDeleteClick;
 
     const taskDropdown = document.createElement('div');
     taskDropdown.className = 'task-dropdown';
@@ -109,10 +116,6 @@ $('header > form').submit(event => {
 });
 
 
-const modal = $('.modal')[0],
-      modalForm = $('.modal-content')[0];
-
-
 function resetModalForm() {
     modalForm.reset();
 }
@@ -128,8 +131,7 @@ function showModal() {
 }
 
 
-function onEditClick(event)
-{
+function onEditClick(event) {
     currentTaskElement = this.parentNode.parentNode;
 
     currentTask = currentTaskElement.task;
@@ -137,6 +139,27 @@ function onEditClick(event)
     resetModalForm();
 
     showModal();
+}
+
+
+async function onDeleteClick(event) {
+    currentTaskElement = this.parentNode.parentNode;
+
+    currentTask = currentTaskElement.task;
+
+    const response = await fetch(`/tasks/${currentTask.id}/delete`, {
+        method: 'DELETE'
+    });
+
+    const result = await response.text();
+
+    if (result === 'OK') {
+        const taskInd = tasks.findIndex(task => task === currentTask);
+        tasks.splice(taskInd, 1);
+        tasks = tasks.filter(t => t != null);
+
+        currentTaskElement.remove();
+    }
 }
 
 
@@ -174,4 +197,8 @@ $('form.modal-content').submit(async function(event) {
 
 $('.modal-content .button-close').click(event => {
     hideModal();
+})
+
+$('.task-add-button').click(event => {
+    alert('lel');
 })

@@ -64,7 +64,7 @@ app.put('/tasks/:id/update', upload.single('file'), (req, res) => {
   }
 
   if (req.body.statusid != null) {
-    task.statusId = req.body.statusid;
+    task.statusId = Number(req.body.statusid);
   }
 
   if (req.body.date != null) {
@@ -86,6 +86,24 @@ app.put('/tasks/:id/update', upload.single('file'), (req, res) => {
     }
     task.file = null;
   }
+
+  const writeData = JSON.stringify(tasks, null, 2);
+  fs.writeFileSync('tasks.json', writeData);
+
+  res.sendStatus(200);
+})
+
+
+app.delete('/tasks/:id/delete', (req, res) => {
+  const rawTasks = fs.readFileSync('tasks.json');
+  let tasks = JSON.parse(rawTasks);
+  
+  const taskId = Number(req.params.id);
+
+  const taskInd = tasks.findIndex(task => task.id === taskId);
+  
+  tasks.splice(taskInd, 1);
+  tasks = tasks.filter(e => e != null);
 
   const writeData = JSON.stringify(tasks, null, 2);
   fs.writeFileSync('tasks.json', writeData);

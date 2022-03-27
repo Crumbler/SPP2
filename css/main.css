@@ -91,6 +91,20 @@ main
     padding: 1.5rem;
 }
 
+.task-add-button
+{
+    border: none;
+    background-color: bisque;
+    cursor: pointer;
+    font-size: 2rem;
+    padding: 1rem;
+}
+
+.task-add-button:hover
+{
+    background-color: aqua;
+}
+
 .task-dropdown
 {
     display: none;
