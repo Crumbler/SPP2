@@ -6,6 +6,8 @@ const modal = $('.modal')[0],
 let statuses, tasks, currentTask,
     currentTaskElement;
 
+let addingTask = false;
+
 
 window.onload = function() {
     clearTasks();
@@ -53,7 +55,7 @@ async function getTasks(status) {
 
     const taskElements = tasks.map(task => createTaskElement(task));
 
-    $("main").append(...taskElements);
+    $('main').append(...taskElements);
 }
 
 
@@ -105,12 +107,10 @@ $('header > form').submit(event => {
 
     const selectedVal = document.getElementById('filter-type').selectedIndex;
     
-    if (selectedVal >= 1 && selectedVal <= statuses.length)
-    {
+    if (selectedVal >= 1 && selectedVal <= statuses.length) {
         getTasks(selectedVal - 1);
     }
-    else
-    {
+    else {
         getTasks();
     }
 });
@@ -128,6 +128,8 @@ function hideModal() {
 
 function showModal() {
     modal.style.display = 'block';
+
+    $('.modal-content .button-submit')[0].value = addingTask ? 'Add' : 'Update';
 }
 
 
@@ -137,6 +139,8 @@ function onEditClick(event) {
     currentTask = currentTaskElement.task;
 
     resetModalForm();
+
+    addingTask = false;
 
     showModal();
 }
@@ -176,6 +180,42 @@ $('form.modal-content').submit(async function(event) {
 
     formData.set('statusid', statusId);
     
+    if (addingTask) {
+        await addTask(formData);
+    }
+    else {
+        await updateTask(formData);
+    }
+
+    hideModal();
+})
+
+
+async function addTask(formData) {
+    const response = await fetch(`/tasks/add`, {
+        method: 'POST',
+        body: formData
+    });
+
+    const result = await response.text();
+
+    if (result === 'OK') {
+        const task = { }
+
+        task.title = formData.get('name');
+        task.statusId = Number(formData.get('statusid'));
+        task.completionDate = formData.get('date');
+
+        if (!task.completionDate) {
+            task.completionDate = null;
+        }
+
+        $('main').append(createTaskElement(task));
+    }
+}
+
+
+async function updateTask(formData) {
     const response = await fetch(`/tasks/${currentTask.id}/update`, {
         method: 'PUT',
         body: formData
@@ -185,20 +225,25 @@ $('form.modal-content').submit(async function(event) {
 
     if (result === 'OK') {
         currentTask.title = formData.get('name');
-        currentTask.statusId = statusId;
+        currentTask.statusId = Number(formData.get('statusid'));
         currentTask.completionDate = formData.get('date');
+
+        if (!currentTask.completionDate) {
+            currentTask.completionDate = null;
+        }
 
         currentTaskElement.firstChild.innerHTML = getTaskHTML(currentTask);
     }
-
-    hideModal();
-})
+}
 
 
 $('.modal-content .button-close').click(event => {
     hideModal();
 })
 
+
 $('.task-add-button').click(event => {
-    alert('lel');
+    addingTask = true;
+
+    showModal();
 })

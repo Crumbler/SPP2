@@ -67,7 +67,7 @@ app.put('/tasks/:id/update', upload.single('file'), (req, res) => {
     task.statusId = Number(req.body.statusid);
   }
 
-  if (req.body.date != null) {
+  if (req.body.date) {
     task.completionDate = req.body.date;
   }
   else {
@@ -86,6 +86,50 @@ app.put('/tasks/:id/update', upload.single('file'), (req, res) => {
     }
     task.file = null;
   }
+
+  const writeData = JSON.stringify(tasks, null, 2);
+  fs.writeFileSync('tasks.json', writeData);
+
+  res.sendStatus(200);
+})
+
+
+app.post('/tasks/add', upload.single('file'), (req, res) => {
+  if (!req.body) {
+    return res.sendStatus(400);
+  }
+
+  const rawTasks = fs.readFileSync('tasks.json');
+  const tasks = JSON.parse(rawTasks);
+  
+  const taskId = tasks[tasks.length - 1].id + 1;
+  
+  const task = { };
+
+  task.title = req.body.name ?? 'New task';
+
+  task.statusId = Number(req.body.statusid ?? '0');
+
+  task.completionDate = req.body.date;
+
+  if (!req.body.date) {
+    task.completionDate = null;
+  }
+
+  if (req.file) {
+    fs.renameSync('Task files/' + req.file.filename, 'Task files/' + taskId + '.bin');
+    task.hasFile = true;
+  }
+  else {
+    try {
+      fs.unlinkSync('Task files/' + taskId + '.bin');
+    } catch(err) {
+      // file didn't exist
+    }
+    task.file = null;
+  }
+
+  tasks.push(task);
 
   const writeData = JSON.stringify(tasks, null, 2);
   fs.writeFileSync('tasks.json', writeData);
