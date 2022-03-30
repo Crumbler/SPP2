@@ -9,11 +9,19 @@ let statuses, tasks, currentTask,
 let addingTask = false;
 
 
-window.onload = function() {
+window.onload = onWindowLoad;
+
+$('header > form').submit(onFilter);
+$('form.modal-content').submit(onModalSubmit);
+$('.modal-content .button-close').click(onModalClose);
+$('.task-add-button').click(onAddClick);
+
+
+async function onWindowLoad() {
     clearTasks();
-    getStatuses();
+    await getStatuses();
     getTasks();
-};
+}
 
 
 function clearTasks() {
@@ -60,9 +68,17 @@ async function getTasks(status) {
 
 
 function getTaskHTML(task) {
-    return `${task.title}: ${statuses[task.statusId]}<br>
-            Completion date: ${task.completionDate ?? 'None'}<br>
-            File: ${task.file ?? 'None'}`;
+    const mainPart = `${task.title}: ${statuses[task.statusId]}<br>
+                      Completion date: ${task.completionDate ?? 'None'}<br>
+                      File: `;
+
+    let filePart = 'None';
+
+    if (task.file) {
+        filePart = `<a href="/tasks/${task.id}/file">${task.file}</a>`;
+    }
+
+    return mainPart + filePart;
 }
 
 
@@ -100,7 +116,7 @@ function createTaskElement(task) {
 }
 
 
-$('header > form').submit(event => {
+function onFilter(event) {
     event.preventDefault();
 
     clearTasks();
@@ -113,7 +129,7 @@ $('header > form').submit(event => {
     else {
         getTasks();
     }
-});
+}
 
 
 function resetModalForm() {
@@ -151,13 +167,13 @@ async function onDeleteClick(event) {
 
     currentTask = currentTaskElement.task;
 
-    const response = await fetch(`/tasks/${currentTask.id}/delete`, {
+    const fetchURL = `/tasks/${currentTask.id}/delete`;
+
+    const response = await fetch(fetchURL, {
         method: 'DELETE'
     });
 
-    const result = await response.text();
-
-    if (result === 'OK') {
+    if (response.ok) {
         const taskInd = tasks.findIndex(task => task === currentTask);
         tasks.splice(taskInd, 1);
         tasks = tasks.filter(t => t != null);
@@ -167,13 +183,17 @@ async function onDeleteClick(event) {
 }
 
 
-$('form.modal-content').submit(async function(event) {
+function onModalSubmit(event) {
     event.preventDefault();
 
     const formData = new FormData(this);
 
-    if (formData.get('date') === undefined) {
+    if (!formData.has('date')) {
         formData.set('date', null);
+    }
+
+    if (!formData.has('file')) {
+        formData.set('file', null);
     }
 
     const statusId = $('#task-status')[0].selectedIndex;
@@ -181,14 +201,14 @@ $('form.modal-content').submit(async function(event) {
     formData.set('statusid', statusId);
     
     if (addingTask) {
-        await addTask(formData);
+        addTask(formData);
     }
     else {
-        await updateTask(formData);
+        updateTask(formData);
     }
 
     hideModal();
-})
+}
 
 
 async function addTask(formData) {
@@ -199,15 +219,26 @@ async function addTask(formData) {
 
     const result = await response.text();
 
-    if (result === 'OK') {
+    const taskId = Number(result);
+
+    if (response.ok) {
         const task = { }
 
         task.title = formData.get('name');
         task.statusId = Number(formData.get('statusid'));
         task.completionDate = formData.get('date');
+        task.id = taskId;
+
+        const taskFile = formData.get('file');
+
+        task.file = taskFile.name;
 
         if (!task.completionDate) {
             task.completionDate = null;
+        }
+
+        if (!task.file) {
+            task.file = null;
         }
 
         $('main').append(createTaskElement(task));
@@ -221,15 +252,21 @@ async function updateTask(formData) {
         body: formData
     });
 
-    const result = await response.text();
-
-    if (result === 'OK') {
+    if (response.ok) {
         currentTask.title = formData.get('name');
         currentTask.statusId = Number(formData.get('statusid'));
         currentTask.completionDate = formData.get('date');
 
+        const taskFile = formData.get('file');
+
+        currentTask.file = taskFile.name;
+
         if (!currentTask.completionDate) {
             currentTask.completionDate = null;
+        }
+
+        if (!currentTask.file) {
+            currentTask.file = null;
         }
 
         currentTaskElement.firstChild.innerHTML = getTaskHTML(currentTask);
@@ -237,13 +274,15 @@ async function updateTask(formData) {
 }
 
 
-$('.modal-content .button-close').click(event => {
+function onModalClose(event) {
     hideModal();
-})
+}
 
 
-$('.task-add-button').click(event => {
+function onAddClick(event) {
     addingTask = true;
 
+    resetModalForm();
+
     showModal();
-})
+}
