@@ -70,7 +70,7 @@ header p, main, form *
     font-family: 'Times New Roman', Times, serif;
 }
 
-.modal-content > *:first-child, .modal-content > *:nth-child(2)
+.modal-task .modal-content > *:first-child, .modal-task .modal-content > *:nth-child(2)
 {
     margin-top: 0;
 }

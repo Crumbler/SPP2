@@ -1,7 +1,7 @@
 'use strict'
 
-const modal = $('.modal')[0],
-      modalForm = $('.modal-content')[0];
+const modalTask = $('.modal-task')[0],
+      modalTaskForm = $('.modal-task .modal-content')[0];
 
 let statuses, tasks, currentTask,
     currentTaskElement;
@@ -12,8 +12,8 @@ let addingTask = false;
 window.onload = onWindowLoad;
 
 $('header > form').submit(onFilter);
-$('form.modal-content').submit(onModalSubmit);
-$('.modal-content .button-close').click(onModalClose);
+$('.modal-task .modal-content').submit(onModalTaskSubmit);
+$('.modal-task .modal-content .button-close').click(onModalTaskClose);
 $('.task-add-button').click(onAddClick);
 
 
@@ -132,20 +132,20 @@ function onFilter(event) {
 }
 
 
-function resetModalForm() {
-    modalForm.reset();
+function resetModalTaskForm() {
+    modalTaskForm.reset();
 }
 
 
-function hideModal() {
-    modal.style.display = 'none';
+function hideModalTask() {
+    modalTask.style.display = 'none';
 }
 
 
-function showModal() {
-    modal.style.display = 'block';
+function showModalTask() {
+    modalTask.style.display = 'block';
 
-    $('.modal-content .button-submit')[0].value = addingTask ? 'Add' : 'Update';
+    $('.modal-task .modal-content .button-submit')[0].value = addingTask ? 'Add' : 'Update';
 }
 
 
@@ -154,11 +154,11 @@ function onEditClick(event) {
 
     currentTask = currentTaskElement.task;
 
-    resetModalForm();
+    resetModalTaskForm();
 
     addingTask = false;
 
-    showModal();
+    showModalTask();
 }
 
 
@@ -183,7 +183,7 @@ async function onDeleteClick(event) {
 }
 
 
-function onModalSubmit(event) {
+function onModalTaskSubmit(event) {
     event.preventDefault();
 
     const formData = new FormData(this);
@@ -207,7 +207,7 @@ function onModalSubmit(event) {
         updateTask(formData);
     }
 
-    hideModal();
+    hideModalTask();
 }
 
 
@@ -274,15 +274,15 @@ async function updateTask(formData) {
 }
 
 
-function onModalClose(event) {
-    hideModal();
+function onModalTaskClose(event) {
+    hideModalTask();
 }
 
 
 function onAddClick(event) {
     addingTask = true;
 
-    resetModalForm();
+    resetModalTaskForm();
 
-    showModal();
+    showModalTask();
 }
